@@ -1,0 +1,81 @@
+@baseUrl = https://localhost:7000
+
+### Cadastro
+POST {{baseUrl}}/api/auth/cadastro
+Content-Type: application/json
+
+{
+  "nome": "Maria Silva",
+  "cpf": "12345678900",
+  "telefone": "11999999999",
+  "email": "maria@teste.com",
+  "senha": "senha123",
+  "tipoUsuario": "Paciente"
+}
+
+### Login (copie o "token" da resposta para usar abaixo)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "maria@teste.com",
+  "senha": "senha123"
+}
+
+### Ver meu perfil
+GET {{baseUrl}}/api/usuarios/me
+Authorization: Bearer COLE_O_TOKEN_AQUI
+
+### Adicionar contato
+POST {{baseUrl}}/api/contatos
+Authorization: Bearer COLE_O_TOKEN_AQUI
+Content-Type: application/json
+
+{
+  "nome": "Ana (Filha)",
+  "telefone": "11988887777",
+  "tipo": "Familiar"
+}
+
+### Registrar pressão
+POST {{baseUrl}}/api/pressao
+Authorization: Bearer COLE_O_TOKEN_AQUI
+Content-Type: application/json
+
+{
+  "sistolica": 160,
+  "diastolica": 100
+}
+
+### Listar pressão por período
+GET {{baseUrl}}/api/pressao?inicio=2026-05-10&fim=2026-05-16
+Authorization: Bearer COLE_O_TOKEN_AQUI
+
+### Registrar humor
+POST {{baseUrl}}/api/humor
+Authorization: Bearer COLE_O_TOKEN_AQUI
+Content-Type: application/json
+
+{
+  "humor": "Feliz"
+}
+
+### Agendar visita de suporte
+POST {{baseUrl}}/api/visitas
+Authorization: Bearer COLE_O_TOKEN_AQUI
+Content-Type: application/json
+
+{
+  "dataHora": "2026-06-02T10:00:00",
+  "observacao": "Visita de rotina"
+}
+
+### Contratar/pagar um plano (checkout)
+POST {{baseUrl}}/api/assinaturas/checkout
+Authorization: Bearer COLE_O_TOKEN_AQUI
+Content-Type: application/json
+
+{
+  "plano": "Cuidado",
+  "metodoPagamento": "Pix"
+}
