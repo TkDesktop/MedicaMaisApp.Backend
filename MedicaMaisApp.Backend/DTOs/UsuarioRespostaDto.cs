@@ -1,4 +1,4 @@
-using MedicaMaisApp.Backend.Modelos;
+    using MedicaMaisApp.Backend.Modelos;
 
 namespace MedicaMaisApp.Backend.DTOs
 {
@@ -24,7 +24,8 @@ namespace MedicaMaisApp.Backend.DTOs
             Email = u.Email,
             TipoUsuario = u.TipoUsuario,
             Plano = u.Plano,
-            FotoUrl = u.FotoUrl
+            FotoUrl = u.FotoUrl,
+            DataCadastro = u.DataCadastro
         };
     }
 }
