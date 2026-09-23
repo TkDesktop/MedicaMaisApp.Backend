@@ -9,7 +9,7 @@ namespace MedicaMaisApp.Backend.DTOs
         [Required, MaxLength(150)]
         public string Nome { get; set; } = string.Empty;
 
-        [Required, MinLength(11), MaxLength(11)]
+        [Required, MinLength(11), MaxLength(14)]
         public string Cpf { get; set; } = string.Empty;
 
         [Required, MaxLength(20)]
