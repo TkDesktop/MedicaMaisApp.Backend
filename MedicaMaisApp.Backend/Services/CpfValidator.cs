@@ -2,6 +2,11 @@
 {
     public static class CpfValidator
     {
+        public static string Normalizar(string cpf)
+        {
+            return new string(cpf.Where(char.IsDigit).ToArray());
+        }
+
         public static bool EhValido(string cpf)
         {
             if (string.IsNullOrWhiteSpace(cpf))

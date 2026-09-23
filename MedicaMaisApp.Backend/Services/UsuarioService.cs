@@ -24,11 +24,9 @@ namespace MedicaMaisApp.Backend.Services
             this.contexto = contexto;
         }
 
-        public Task<Usuario?> BuscarPorIdAsync(int id) =>
-            contexto.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
+        public Task<Usuario?> BuscarPorIdAsync(int id) => contexto.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
 
-        public Task<Usuario?> BuscarPorEmailAsync(string email) =>
-            contexto.Usuarios.FirstOrDefaultAsync(u => u.Email == email.ToLower());
+        public Task<Usuario?> BuscarPorEmailAsync(string email) => contexto.Usuarios.FirstOrDefaultAsync(u => u.Email == email.ToLower());
 
         public async Task<(bool sucesso, string? erro, Usuario? usuario)> CadastrarAsync(UsuarioCadastroDto dto)
         {
@@ -37,7 +35,8 @@ namespace MedicaMaisApp.Backend.Services
             {
                 return (false, "CPF inválido.", null);
             }
-                
+
+            var cpfNormalizado = CpfValidator.Normalizar(dto.Cpf);
 
             var emailNormalizado = dto.Email.Trim().ToLower();
 
@@ -45,7 +44,7 @@ namespace MedicaMaisApp.Backend.Services
             if (emailEmUso)
                 return (false, "Este email já está cadastrado.", null);
 
-            bool cpfEmUso = await contexto.Usuarios.AnyAsync(u => u.Cpf == dto.Cpf);
+            bool cpfEmUso = await contexto.Usuarios.AnyAsync(u => u.Cpf == cpfNormalizado);
             if (cpfEmUso)
                 return (false, "Este CPF já está cadastrado.", null);
 
@@ -54,7 +53,7 @@ namespace MedicaMaisApp.Backend.Services
             var usuario = new Usuario
             {
                 Nome = dto.Nome.Trim(),
-                Cpf = dto.Cpf,
+                Cpf = cpfNormalizado,
                 Telefone = dto.Telefone,
                 Email = emailNormalizado,
                 SenhaHash = hash,
