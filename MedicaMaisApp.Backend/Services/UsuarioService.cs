@@ -32,6 +32,13 @@ namespace MedicaMaisApp.Backend.Services
 
         public async Task<(bool sucesso, string? erro, Usuario? usuario)> CadastrarAsync(UsuarioCadastroDto dto)
         {
+
+            if (!CpfValidator.EhValido(dto.Cpf))
+            {
+                return (false, "CPF inválido.", null);
+            }
+                
+
             var emailNormalizado = dto.Email.Trim().ToLower();
 
             bool emailEmUso = await contexto.Usuarios.AnyAsync(u => u.Email == emailNormalizado);
