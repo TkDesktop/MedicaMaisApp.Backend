@@ -166,7 +166,7 @@ namespace MedicaMaisApp.Backend.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
-                    b.Property<int>("Plano")
+                    b.Property<int?>("Plano")
                         .HasColumnType("int");
 
                     b.Property<string>("SenhaHash")

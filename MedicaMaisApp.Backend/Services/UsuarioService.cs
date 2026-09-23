@@ -52,8 +52,7 @@ namespace MedicaMaisApp.Backend.Services
                 Email = emailNormalizado,
                 SenhaHash = hash,
                 SenhaSalt = salt,
-                TipoUsuario = dto.TipoUsuario,
-                Plano = Plano.Essencial
+                TipoUsuario = dto.TipoUsuario
             };
 
             contexto.Usuarios.Add(usuario);

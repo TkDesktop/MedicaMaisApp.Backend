@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicaMaisApp.Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260922202549_InicialMySQL")]
+    [Migration("20260923003452_InicialMySQL")]
     partial class InicialMySQL
     {
         /// <inheritdoc />
@@ -169,7 +169,7 @@ namespace MedicaMaisApp.Backend.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
-                    b.Property<int>("Plano")
+                    b.Property<int?>("Plano")
                         .HasColumnType("int");
 
                     b.Property<string>("SenhaHash")

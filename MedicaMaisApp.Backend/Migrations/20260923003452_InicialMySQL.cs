@@ -34,7 +34,7 @@ namespace MedicaMaisApp.Backend.Migrations
                     SenhaSalt = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     TipoUsuario = table.Column<int>(type: "int", nullable: false),
-                    Plano = table.Column<int>(type: "int", nullable: false),
+                    Plano = table.Column<int>(type: "int", nullable: true),
                     FotoUrl = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     DataCadastro = table.Column<DateTime>(type: "datetime(6)", nullable: false)

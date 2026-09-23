@@ -11,7 +11,7 @@ namespace MedicaMaisApp.Backend.DTOs
         public string? Telefone { get; set; }
         public string Email { get; set; } = string.Empty;
         public TipoUsuario TipoUsuario { get; set; }
-        public Plano Plano { get; set; }
+        public Plano? Plano { get; set; }
         public string? FotoUrl { get; set; }
         public DateTime DataCadastro { get; set; }
 

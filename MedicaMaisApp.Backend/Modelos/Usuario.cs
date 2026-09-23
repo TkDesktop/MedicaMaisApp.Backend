@@ -27,7 +27,7 @@ namespace MedicaMaisApp.Backend.Modelos
 
         public TipoUsuario TipoUsuario { get; set; }
 
-        public Plano Plano { get; set; } = Plano.Essencial;
+        public Plano? Plano { get; set; }
 
         public string? FotoUrl { get; set; }
 
