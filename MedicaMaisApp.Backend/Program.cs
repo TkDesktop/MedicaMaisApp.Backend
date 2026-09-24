@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-
+using Resend;
 
 var builder = WebApplication.CreateBuilder(args);
 
