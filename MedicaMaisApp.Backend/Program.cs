@@ -29,6 +29,16 @@ builder.Services.AddScoped<IVisitaService, VisitaService>();
 builder.Services.AddScoped<IAssinaturaService, AssinaturaService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
+builder.Services.AddOptions();
+builder.Services.AddHttpClient<ResendClient>();
+
+builder.Services.Configure<ResendClientOptions>(options =>
+{
+    options.ApiToken = Environment.GetEnvironmentVariable("RESEND_APITOKEN")!;
+});
+
+builder.Services.AddTransient<IResend, ResendClient>();
+
 // ---------- Autenticação JWT ----------
 var chaveJwt = builder.Configuration["Jwt:Chave"]!;
 
