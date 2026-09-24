@@ -19,10 +19,12 @@ namespace MedicaMaisApp.Backend.Services
     public class UsuarioService : IUsuarioService
     {
         private readonly AppDbContext contexto;
+        private readonly IEmailService emailService;
 
-        public UsuarioService(AppDbContext contexto)
+        public UsuarioService(AppDbContext contexto, IEmailService emailService)
         {
             this.contexto = contexto;
+            this.emailService = emailService;
         }
 
         public Task<Usuario?> BuscarPorIdAsync(int id) => contexto.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
@@ -71,6 +73,7 @@ namespace MedicaMaisApp.Backend.Services
 
             contexto.Usuarios.Add(usuario);
             await contexto.SaveChangesAsync();
+            await emailService.EnviarCodigoConfirmacaoAsync(usuario.Email,codigoConfirmacao);
 
             return (true, null, usuario);
         }
