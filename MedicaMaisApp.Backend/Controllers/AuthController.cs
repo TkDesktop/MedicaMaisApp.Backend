@@ -19,20 +19,18 @@ namespace MedicaMaisApp.Backend.Controllers
 
         // POST api/auth/cadastro  -> equivale ao form-cadastro em login.html
         [HttpPost("cadastro")]
-        public async Task<ActionResult<TokenRespostaDto>> Cadastrar(UsuarioCadastroDto dto)
+        public async Task<IActionResult> Cadastrar(UsuarioCadastroDto dto)
         {
             var (sucesso, erro, usuario) = await usuarioService.CadastrarAsync(dto);
 
             if (!sucesso || usuario is null)
                 return BadRequest(new { mensagem = erro });
 
-            var (token, expiraEm) = tokenService.GerarToken(usuario);
-
-            return CreatedAtAction(nameof(Cadastrar), new TokenRespostaDto
+            return Created("", new
             {
-                Token = token,
-                ExpiraEm = expiraEm,
-                Usuario = UsuarioRespostaDto.DeEntidade(usuario)
+                mensagem = "Cadastro realizado. Confirme seu email para realizar o login.",
+                codigoConfirmacao = usuario.CodigoConfirmacaoEmail,
+                usuario = UsuarioRespostaDto.DeEntidade(usuario)
             });
         }
 
@@ -53,6 +51,17 @@ namespace MedicaMaisApp.Backend.Controllers
                 ExpiraEm = expiraEm,
                 Usuario = UsuarioRespostaDto.DeEntidade(usuario)
             });
+        }
+
+        [HttpPost("confirmar-email")]
+        public async Task<IActionResult> ConfirmarEmail(ConfirmarEmailDto dto)
+        {
+            var (sucesso, mensagem) = await usuarioService.ConfirmarEmailAsync(dto);
+
+            if (!sucesso)
+                return BadRequest(new { mensagem });
+
+            return Ok(new { mensagem });
         }
     }
 }

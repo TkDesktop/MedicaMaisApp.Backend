@@ -9,6 +9,7 @@ namespace MedicaMaisApp.Backend.Services
     {
         Task<Usuario?> BuscarPorIdAsync(int id);
         Task<Usuario?> BuscarPorEmailAsync(string email);
+        Task<(bool sucesso, string mensagem)> ConfirmarEmailAsync(ConfirmarEmailDto dto);
         Task<(bool sucesso, string? erro, Usuario? usuario)> CadastrarAsync(UsuarioCadastroDto dto);
         Task<(bool sucesso, Usuario? usuario)> ValidarLoginAsync(UsuarioLoginDto dto);
         Task<(bool sucesso, string? erro, Usuario? usuario)> AtualizarAsync(int id, UsuarioAtualizacaoDto dto);
@@ -27,6 +28,7 @@ namespace MedicaMaisApp.Backend.Services
         public Task<Usuario?> BuscarPorIdAsync(int id) => contexto.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
 
         public Task<Usuario?> BuscarPorEmailAsync(string email) => contexto.Usuarios.FirstOrDefaultAsync(u => u.Email == email.ToLower());
+
 
         public async Task<(bool sucesso, string? erro, Usuario? usuario)> CadastrarAsync(UsuarioCadastroDto dto)
         {
@@ -48,6 +50,8 @@ namespace MedicaMaisApp.Backend.Services
             if (cpfEmUso)
                 return (false, "Este CPF já está cadastrado.", null);
 
+            var codigoConfirmacao = Random.Shared.Next(100000, 1000000).ToString();
+
             var (hash, salt) = SenhaHasher.Gerar(dto.Senha);
 
             var usuario = new Usuario
@@ -58,7 +62,11 @@ namespace MedicaMaisApp.Backend.Services
                 Email = emailNormalizado,
                 SenhaHash = hash,
                 SenhaSalt = salt,
-                TipoUsuario = dto.TipoUsuario
+                TipoUsuario = dto.TipoUsuario,
+
+                EmailConfirmado = false,
+                CodigoConfirmacaoEmail = codigoConfirmacao,
+                ExpiracaoCodigoConfirmacao = DateTime.UtcNow.AddMinutes(15)
             };
 
             contexto.Usuarios.Add(usuario);
@@ -66,12 +74,44 @@ namespace MedicaMaisApp.Backend.Services
 
             return (true, null, usuario);
         }
+        
+        public async Task<(bool sucesso, string mensagem)> ConfirmarEmailAsync(ConfirmarEmailDto dto)
+        {
+            var emailNormalizado = dto.Email.Trim().ToLower();
+
+            var usuario = await contexto.Usuarios
+                .FirstOrDefaultAsync(u => u.Email == emailNormalizado);
+
+            if (usuario is null)
+                return (false, "Usuário não encontrado.");
+
+            if (usuario.EmailConfirmado)
+                return (false, "Este email já foi confirmado.");
+
+            if (usuario.CodigoConfirmacaoEmail != dto.Codigo)
+                return (false, "Código de confirmação inválido.");
+
+            if (usuario.ExpiracaoCodigoConfirmacao is null ||
+                usuario.ExpiracaoCodigoConfirmacao < DateTime.UtcNow)
+                return (false, "O código de confirmação expirou.");
+
+            usuario.EmailConfirmado = true;
+            usuario.CodigoConfirmacaoEmail = null;
+            usuario.ExpiracaoCodigoConfirmacao = null;
+
+            await contexto.SaveChangesAsync();
+
+            return (true, "Email confirmado com sucesso.");
+        }
 
         public async Task<(bool sucesso, Usuario? usuario)> ValidarLoginAsync(UsuarioLoginDto dto)
         {
             var usuario = await BuscarPorEmailAsync(dto.Email);
 
             if (usuario is null)
+                return (false, null);
+
+            if (!usuario.EmailConfirmado)
                 return (false, null);
 
             bool senhaValida = SenhaHasher.Validar(dto.Senha, usuario.SenhaHash, usuario.SenhaSalt);
