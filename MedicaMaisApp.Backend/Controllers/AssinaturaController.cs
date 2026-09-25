@@ -24,7 +24,8 @@ namespace MedicaMaisApp.Backend.Controllers
         public async Task<IActionResult> Checkout(AssinaturaCheckoutDto dto)
         {
             var assinatura = await assinaturaService.ContratarAsync(UsuarioIdLogado, dto);
-            return CreatedAtAction(nameof(Listar), assinatura);
+            return CreatedAtAction(nameof(Listar),new { },
+            AssinaturaRespostaDto.DeEntidade(assinatura));
         }
     }
 }
