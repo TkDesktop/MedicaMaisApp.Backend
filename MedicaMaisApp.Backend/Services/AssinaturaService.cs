@@ -34,6 +34,10 @@ namespace MedicaMaisApp.Backend.Services
         {
             var usuario = await contexto.Usuarios.FirstOrDefaultAsync(u => u.Id == usuarioId)
                 ?? throw new InvalidOperationException("Usuário não encontrado.");
+            
+            if (usuario.Plano is not null)
+                throw new InvalidOperationException(
+                    "O usuário já possui um plano. Para trocar de plano, utilize a alteração de plano.");
 
             var valor = Precos[dto.Plano];
 

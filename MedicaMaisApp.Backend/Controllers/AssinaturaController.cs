@@ -28,19 +28,33 @@ namespace MedicaMaisApp.Backend.Controllers
         [HttpPost("checkout")]
         public async Task<IActionResult> Checkout(AssinaturaCheckoutDto dto)
         {
-            var assinatura = await assinaturaService.ContratarAsync(UsuarioIdLogado, dto);
-            return CreatedAtAction(nameof(Listar),new { },
-            AssinaturaRespostaDto.DeEntidade(assinatura));
+            try
+            {
+                var assinatura = await assinaturaService.ContratarAsync(UsuarioIdLogado,dto);
+
+                return CreatedAtAction(nameof(Listar),new { },AssinaturaRespostaDto.DeEntidade(assinatura));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { mensagem = ex.Message });
+            }
         }
 
         [HttpPut("plano")]
         public async Task<IActionResult> TrocarPlano(AssinaturaCheckoutDto dto)
         {
-            var assinatura = await assinaturaService.TrocarPlanoAsync(
-                UsuarioIdLogado,
-                dto);
+            try
+            {
+                var assinatura = await assinaturaService.TrocarPlanoAsync(
+                    UsuarioIdLogado,
+                    dto);
 
-            return Ok(AssinaturaRespostaDto.DeEntidade(assinatura));
+                return Ok(AssinaturaRespostaDto.DeEntidade(assinatura));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { mensagem = ex.Message });
+            }
         }
     }
 }
