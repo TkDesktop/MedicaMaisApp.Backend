@@ -13,7 +13,7 @@ namespace MedicaMaisApp.Backend.Services
         Task<Contato?> AtualizarAsync(int usuarioId, int contatoId, ContatoDto dto);
         Task<bool> ExcluirAsync(int usuarioId, int contatoId);
     }
-
+    
     public class ContatoService : IContatoService
     {
         private readonly AppDbContext contexto;

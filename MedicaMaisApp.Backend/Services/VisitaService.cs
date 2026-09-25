@@ -22,7 +22,7 @@ namespace MedicaMaisApp.Backend.Services
         {
             this.contexto = contexto;
         }
-
+        
         public Task<List<VisitaSuporte>> ListarDoUsuarioAsync(int usuarioId) =>
             contexto.Visitas.Where(v => v.UsuarioId == usuarioId)
                 .OrderBy(v => v.DataHora)

@@ -122,27 +122,42 @@ namespace MedicaMaisApp.Backend.Services
             return senhaValida ? (true, usuario) : (false, null);
         }
 
-        public async Task<(bool sucesso, string? erro, Usuario? usuario)> AtualizarAsync(int id, UsuarioAtualizacaoDto dto)
+        public async Task<(bool sucesso, string? erro, Usuario? usuario)> AtualizarAsync(int id,UsuarioAtualizacaoDto dto)
         {
             var usuario = await contexto.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
+
             if (usuario is null)
                 return (false, "Usuário não encontrado.", null);
 
             var emailNormalizado = dto.Email.Trim().ToLower();
 
-            bool emailEmUso = await contexto.Usuarios
-                .AnyAsync(u => u.Email == emailNormalizado && u.Id != id);
+            bool emailEmUso = await contexto.Usuarios.AnyAsync(u => u.Email == emailNormalizado && u.Id != id);
+
             if (emailEmUso)
                 return (false, "Este email já está em uso por outra conta.", null);
 
-            usuario.Nome = dto.Nome.Trim();
-            usuario.Cpf = dto.Cpf;
-            usuario.Telefone = dto.Telefone;
-            usuario.Email = emailNormalizado;
-            usuario.TipoUsuario = dto.TipoUsuario;
+            bool emailMudou = usuario.Email != emailNormalizado;
+
+            usuario.Telefone = dto.Telefone.Trim();
             usuario.FotoUrl = dto.FotoUrl;
 
-            await contexto.SaveChangesAsync();
+            if (emailMudou)
+            {
+                var codigoConfirmacao = Random.Shared.Next(100000, 1000000).ToString();
+
+                usuario.Email = emailNormalizado;
+                usuario.EmailConfirmado = false;
+                usuario.CodigoConfirmacaoEmail = codigoConfirmacao;
+                usuario.ExpiracaoCodigoConfirmacao = DateTime.UtcNow.AddMinutes(15);
+
+                await contexto.SaveChangesAsync();
+
+                await emailService.EnviarCodigoConfirmacaoAsync(usuario.Email,codigoConfirmacao);
+            }
+            else
+            {
+                await contexto.SaveChangesAsync();
+            }
 
             return (true, null, usuario);
         }
