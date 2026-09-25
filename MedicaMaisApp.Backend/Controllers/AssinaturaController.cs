@@ -16,8 +16,13 @@ namespace MedicaMaisApp.Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Listar() =>
-            Ok(await assinaturaService.ListarDoUsuarioAsync(UsuarioIdLogado));
+        public async Task<IActionResult> Listar()
+        {
+            var assinaturas = await assinaturaService.ListarDoUsuarioAsync(UsuarioIdLogado);
+            var resposta = assinaturas.Select(AssinaturaRespostaDto.DeEntidade).ToList();
+
+            return Ok(resposta);
+        }
 
         // POST api/assinaturas/checkout -> equivale a clicar em "Pagar" / "Já paguei" em checkout.html
         [HttpPost("checkout")]
