@@ -2,6 +2,7 @@ using MedicaMaisApp.Backend.Data;
 using MedicaMaisApp.Backend.DTOs;
 using MedicaMaisApp.Backend.Modelos;
 using Microsoft.EntityFrameworkCore;
+using Resend;
 
 namespace MedicaMaisApp.Backend.Services
 {
@@ -138,24 +139,31 @@ namespace MedicaMaisApp.Backend.Services
 
             bool emailMudou = usuario.Email != emailNormalizado;
 
-            usuario.Telefone = dto.Telefone.Trim();
-            usuario.FotoUrl = dto.FotoUrl;
-
             if (emailMudou)
             {
-                var codigoConfirmacao = Random.Shared.Next(100000, 1000000) .ToString();
+                var codigoConfirmacao = Random.Shared.Next(100000, 1000000).ToString();
 
                 var expiracaoCodigo = DateTime.UtcNow.AddMinutes(15);
 
-                await emailService.EnviarCodigoConfirmacaoAsync(emailNormalizado,codigoConfirmacao);
+                try
+                {
+                    await emailService.EnviarCodigoConfirmacaoAsync(emailNormalizado,codigoConfirmacao);
+                }
+                catch (ResendException)
+                {
+                    return (false,"Não foi possível enviar o código de confirmação para o novo email.",null);
+                }
 
                 usuario.Email = emailNormalizado;
                 usuario.EmailConfirmado = false;
                 usuario.CodigoConfirmacaoEmail = codigoConfirmacao;
                 usuario.ExpiracaoCodigoConfirmacao = expiracaoCodigo;
-
-                await contexto.SaveChangesAsync();
             }
+
+            usuario.Telefone = dto.Telefone.Trim();
+            usuario.FotoUrl = dto.FotoUrl;
+
+            await contexto.SaveChangesAsync();
 
             return (true, null, usuario);
         }
