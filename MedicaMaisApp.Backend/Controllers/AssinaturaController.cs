@@ -32,5 +32,15 @@ namespace MedicaMaisApp.Backend.Controllers
             return CreatedAtAction(nameof(Listar),new { },
             AssinaturaRespostaDto.DeEntidade(assinatura));
         }
+
+        [HttpPut("plano")]
+        public async Task<IActionResult> TrocarPlano(AssinaturaCheckoutDto dto)
+        {
+            var assinatura = await assinaturaService.TrocarPlanoAsync(
+                UsuarioIdLogado,
+                dto);
+
+            return Ok(AssinaturaRespostaDto.DeEntidade(assinatura));
+        }
     }
 }

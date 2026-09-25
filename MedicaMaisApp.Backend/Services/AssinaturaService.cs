@@ -9,6 +9,7 @@ namespace MedicaMaisApp.Backend.Services
     {
         Task<Assinatura> ContratarAsync(int usuarioId, AssinaturaCheckoutDto dto);
         Task<List<Assinatura>> ListarDoUsuarioAsync(int usuarioId);
+        Task<Assinatura> TrocarPlanoAsync(int usuarioId, AssinaturaCheckoutDto dto);
     }
 
     public class AssinaturaService : IAssinaturaService
@@ -54,6 +55,33 @@ namespace MedicaMaisApp.Backend.Services
             usuario.Plano = dto.Plano;
 
             await contexto.SaveChangesAsync();
+            return assinatura;
+        }
+
+        public async Task<Assinatura> TrocarPlanoAsync(int usuarioId, AssinaturaCheckoutDto dto)
+        {
+            var usuario = await contexto.Usuarios.FirstOrDefaultAsync(u => u.Id == usuarioId)
+                ?? throw new InvalidOperationException("Usuário não encontrado.");
+
+            if (usuario.Plano == dto.Plano)
+                throw new InvalidOperationException("O usuário já possui este plano.");
+
+            var valor = Precos[dto.Plano];
+
+            var assinatura = new Assinatura
+            {
+                UsuarioId = usuarioId,
+                Plano = dto.Plano,
+                Valor = valor,
+                MetodoPagamento = dto.MetodoPagamento,
+                Status = StatusPagamento.Aprovado,
+                DataPagamento = DateTime.UtcNow
+            };
+
+            contexto.Assinaturas.Add(assinatura);
+            usuario.Plano = dto.Plano;
+            await contexto.SaveChangesAsync();
+
             return assinatura;
         }
 
