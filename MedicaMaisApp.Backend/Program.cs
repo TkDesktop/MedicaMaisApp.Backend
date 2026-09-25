@@ -132,6 +132,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("PermitirTudo");
 
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"AUTH HEADER: {context.Request.Headers.Authorization}");
+    await next();
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
