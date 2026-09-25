@@ -143,19 +143,17 @@ namespace MedicaMaisApp.Backend.Services
 
             if (emailMudou)
             {
-                var codigoConfirmacao = Random.Shared.Next(100000, 1000000).ToString();
+                var codigoConfirmacao = Random.Shared.Next(100000, 1000000) .ToString();
+
+                var expiracaoCodigo = DateTime.UtcNow.AddMinutes(15);
+
+                await emailService.EnviarCodigoConfirmacaoAsync(emailNormalizado,codigoConfirmacao);
 
                 usuario.Email = emailNormalizado;
                 usuario.EmailConfirmado = false;
                 usuario.CodigoConfirmacaoEmail = codigoConfirmacao;
-                usuario.ExpiracaoCodigoConfirmacao = DateTime.UtcNow.AddMinutes(15);
+                usuario.ExpiracaoCodigoConfirmacao = expiracaoCodigo;
 
-                await contexto.SaveChangesAsync();
-
-                await emailService.EnviarCodigoConfirmacaoAsync(usuario.Email,codigoConfirmacao);
-            }
-            else
-            {
                 await contexto.SaveChangesAsync();
             }
 
