@@ -38,8 +38,16 @@ namespace MedicaMaisApp.Backend.Controllers
         [HttpPut("{id}/reagendar")]
         public async Task<IActionResult> Reagendar(int id, VisitaReagendamentoDto dto)
         {
-            var visita = await visitaService.ReagendarAsync(UsuarioIdLogado, id, dto);
-            return visita is null ? NotFound() : Ok(visita);
+            try
+            {
+                var visita = await visitaService.ReagendarAsync( UsuarioIdLogado,id, dto);
+
+                return visita is null ? NotFound() : Ok(visita);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { mensagem = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
