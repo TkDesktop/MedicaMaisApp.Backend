@@ -55,8 +55,11 @@ namespace MedicaMaisApp.Backend.Services
         {
             var visita = await contexto.Visitas
                 .FirstOrDefaultAsync(v => v.UsuarioId == usuarioId && v.Id == visitaId);
-
+            
             if (visita is null) return null;
+
+            if (visita.Status == StatusVisita.Cancelada)
+                throw new InvalidOperationException("Uma visita cancelada não pode ser reagendada.");
 
             visita.DataHora = dto.NovaDataHora;
             visita.Status = StatusVisita.Reagendada;
